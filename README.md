@@ -1,3 +1,8 @@
+#Notes from Curtis
+1. It seems that the collision detector for the file that just uses lines doesn't work very well. 
+2. It also seems that it is really difficult for the Dublin_collision file to find a path randomly within 5 cm.
+
+
 # Dubins-RRT-for-MATLAB
  
 # About
