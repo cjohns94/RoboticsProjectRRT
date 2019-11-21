@@ -56,15 +56,26 @@ map.center = [0, 0];
 map.offset = map.center - [map.width, map.height]./2; % bottom-left corner
 
 % starting vertex
-origin = [1,2, 20*pi/180];
+start = [1,2];
+
+%final vertex
+final = [-5,-5];
+
+dist = sqrt((final(1)-start(1))^2 + (final(2) - start(2))^2);
+
+%define direction between two start and final
+direction = atan2((final(1) - start(1)),(final(2) - start(2)));
+
+%define initial origin and direction
+origin = [start(1),start(2), direction];
 
 % define the obstacles using polygones, should be a cell stack of arrays.
 poly = { [-4,-4; -1.5, -4; 0, -2.5; -0.5, -1; -3, 0],...
          [0,3; 3,3; 3, 6; 4, 6; 1.5, 8; -1, 6; 0, 6] };
 
 % RRT parameters
-iteration = 1000;
-th_range = 2*pi;    % do not change without knowledge about Dubins
+iteration = 10;
+th_range = pi;    % do not change without knowledge about Dubins
 th_center = 0;
 th_offset = 0;
 
@@ -97,7 +108,8 @@ edge_count = 0;
 
 % figure('name', 'RRT growing'); % originally for real-time animation
 tic;
-for i=1:iteration
+i = 1;
+while dist > .5
     % random point generation
     x_rand = map.width*rand() + map.offset(1);
     y_rand = map.height*rand() + map.offset(2);
@@ -126,7 +138,9 @@ for i=1:iteration
         edges.th(edge_count+1,:) = [vertecies(ind_nearest(i),3), th_rand];
         edges.param(edge_count+1) = param_nearest;
         edge_count = edge_count + 1;
+        dist = sqrt((x_rand-final(1))^2 + (y_rand - final(2))^2)
     end
+    i = i+1;
 end
 toc;
 clear i x_rand y_rand th_rand param_nearest 
@@ -139,6 +153,7 @@ plot(boundary(:,1),boundary(:,2),'--r'); hold on;
 plot_obstacle_poly(gca, poly);
 % plot path
 plot_RRT_Dubins(gca, vertecies, edges, vert_count);
+scatter(final(1), final(2),'*', 'r');
 % set size
 xlim([map.offset(1)-1,map.offset(1)+map.width+1]);
 ylim([map.offset(2)-1,map.offset(2)+map.height+1]);
